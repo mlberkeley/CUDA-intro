@@ -2,13 +2,18 @@
 #include <cuda_runtime.h>
 
 #define N (1 << 20)
+#define THREADS_PER_BLOCK 32
 
 // Kernel definition
+// Useful variables:
+// blockDim.x: number of threads in a block
+// blockIdx.x: index of the current block
+// threadIdx.x: index of the current thread
 __global__ void VecAdd(float *A, float *B,
                        float *C)
 {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    *(C + i) = *(A + i) + *(B + i);
+    // YOUR CODE HERE
+    // Implement vector add. This kernel should add A and B and store the result in C.
 }
 
 int main()
@@ -34,9 +39,8 @@ int main()
     err = cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
     err = cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
 
-    dim3 threadsPerBlock(32);
+    dim3 threadsPerBlock(THREADS_PER_BLOCK);
     dim3 numBlocks(N / threadsPerBlock.x);
-    printf("numBlocks: %d\n", numBlocks.x);
     VecAdd<<<numBlocks, threadsPerBlock>>>(d_A, d_B, d_C);
 
     err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
